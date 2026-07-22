@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
-  <title>Mickle's Mood Tracker</title>
+  <title>Mickle · Mood tracker</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
-
+    /* ——— RESET & BASE ——— */
     * {
       margin: 0;
       padding: 0;
@@ -16,652 +14,643 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
-
     body {
-      font-family: 'Quicksand', sans-serif;
-      background: radial-gradient(circle at 15% 10%, #F3E4FF 0%, transparent 45%),
-                  radial-gradient(circle at 85% 15%, #FFD9E9 0%, transparent 50%),
-                  radial-gradient(circle at 50% 90%, #FFD9E9 0%, transparent 55%),
-                  #FFEAF2;
+      font-family: 'Segoe UI', -apple-system, system-ui, 'Helvetica Neue', sans-serif;
+      background: #f6f2f7; /* flat soft */
       min-height: 100vh;
       min-height: 100dvh;
-      padding: 0.75rem 0.6rem 1.5rem;
+      padding: 20px 16px 30px;
       display: flex;
       justify-content: center;
-      overflow-x: hidden;
-      color: #43303B;
+      color: #2d2329;
     }
-
-    .blob-field {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(50px);
-      opacity: 0.55;
-    }
-    .blob-a { width: 220px; height: 220px; top: -50px; left: -50px; background: #FF8FAB; }
-    .blob-b { width: 190px; height: 190px; bottom: 10%; right: -50px; background: #B9A6FF; }
-    .blob-c { width: 160px; height: 160px; bottom: -40px; left: 5%; background: #5FCBB4; opacity: 0.4; }
 
     .container {
-      max-width: 440px;
+      max-width: 400px;
       width: 100%;
-      position: relative;
-      z-index: 1;
-      margin: 0 auto;
     }
 
-    /* --- header --- */
+    /* ——— flat cards ——— */
+    .card {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 20px 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0,0,0,0.02);
+      border: 1px solid #f0e8ee;
+      transition: box-shadow 0.1s;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.2px;
+      color: #1f161b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .card-title i {
+      color: #d47b9e;
+      font-size: 1.2rem;
+      width: 28px;
+      text-align: center;
+    }
+
+    /* ——— header ——— */
     .header {
       text-align: center;
-      margin-bottom: 0.8rem;
-      padding-top: 0.2rem;
+      margin-bottom: 20px;
+      padding-top: 6px;
     }
-    .avatar-bubble {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 0.4rem;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #FF8FAB, #F94C74);
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      background: #fce7f0;
+      border-radius: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
-      box-shadow: 0 6px 18px rgba(249, 76, 116, 0.22);
+      font-size: 2.4rem;
+      margin: 0 auto 10px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 6px 12px rgba(180, 80, 120, 0.08);
     }
-    .header .greeting {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 600;
-      color: #43303B;
+
+    .greeting {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1f161b;
     }
-    .header .greeting span {
-      background: linear-gradient(135deg, #FF6B8A, #F94C74);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+
+    .greeting span {
+      color: #d47b9e;
     }
-    .header p {
-      color: #8A6575;
-      font-size: 0.88rem;
-      margin-top: 0.1rem;
+
+    .sub-greeting {
+      color: #6f5b66;
+      font-size: 1rem;
+      font-weight: 450;
+      margin-top: 2px;
     }
-    .header .date-display {
-      color: #8A6575;
-      font-size: 0.72rem;
-      margin-top: 0.4rem;
-      font-weight: 600;
-      background: #fff;
+
+    .date-badge {
       display: inline-block;
-      padding: 0.2rem 0.9rem;
-      border-radius: 30px;
-      border: 1px solid #FFE0EC;
-    }
-
-    /* telegram status */
-    .telegram-status {
-      border-radius: 16px;
-      padding: 0.5rem 0.8rem;
-      font-size: 0.72rem;
-      text-align: center;
-      margin-bottom: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border: 1px solid;
-      font-weight: 600;
-      flex-wrap: wrap;
-    }
-    .telegram-status.success { background: #E9F8EE; color: #2E8B4C; border-color: #B6E6C6; }
-    .telegram-status.error { background: #FFECEE; color: #D0405A; border-color: #F5B7C1; }
-    .telegram-status.testing { background: #FFF4E3; color: #C57A00; border-color: #FFD79A; }
-
-    /* cards */
-    .section-card {
-      background: #FFFCFD;
-      border-radius: 24px;
-      padding: 0.9rem 0.9rem;
-      border: 1.5px solid #FFE0EC;
-      margin-bottom: 0.8rem;
-      box-shadow: 0 3px 14px rgba(249, 76, 116, 0.05);
-    }
-    .card-title {
-      font-family: 'Fredoka', sans-serif;
-      color: #43303B;
-      font-size: 0.92rem;
-      font-weight: 600;
-      margin-bottom: 0.7rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .card-title .icon-badge {
-      width: 26px;
-      height: 26px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-top: 12px;
+      background: #f2eaf0;
+      padding: 6px 20px;
+      border-radius: 40px;
       font-size: 0.8rem;
-      color: #fff;
-      background: linear-gradient(135deg, #FF8FAB, #F94C74);
-      flex-shrink: 0;
-    }
-    .card-title small {
-      margin-left: auto;
-      font-family: 'Quicksand', sans-serif;
       font-weight: 600;
-      font-size: 0.65rem;
-      color: #B092A0;
+      color: #4c3943;
+      letter-spacing: 0.2px;
     }
 
-    /* mood grid */
+    /* ——— telegram status (flat) ——— */
+    .telegram-status {
+      background: #f2f0f5;
+      border-radius: 60px;
+      padding: 10px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid #e4dae1;
+      margin-bottom: 18px;
+      color: #3f2e38;
+    }
+
+    .telegram-status.success { background: #e3f3e8; border-color: #b6d9c6; color: #1f6d3c; }
+    .telegram-status.error { background: #fcecee; border-color: #f5c9cf; color: #b13e4f; }
+    .telegram-status.testing { background: #fcf2e1; border-color: #f5dbaa; color: #8a6200; }
+
+    /* ——— mood grid (flat, larger) ——— */
     .mood-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.45rem;
-    }
-    .mood-btn {
-      background: #fff;
-      border: 2px solid #FFE0EC;
-      border-radius: 16px;
-      padding: 0.45rem 0.1rem;
-      cursor: pointer;
-      text-align: center;
-      font-family: 'Quicksand', sans-serif;
-      transform: translateZ(0);
-      transition: border-color 0.15s, background 0.15s;
-      touch-action: manipulation;
-    }
-    .mood-btn .emoji { font-size: 1.5rem; display: block; line-height: 1.3; }
-    .mood-btn .label { font-size: 0.55rem; color: #8A6575; font-weight: 700; margin-top: 2px; letter-spacing: 0.2px; }
-    .mood-btn.selected {
-      border-color: var(--mood-color, #FF6B8A);
-      background: var(--mood-tint, #FFE2ED);
-      box-shadow: 0 6px 18px rgba(249, 76, 116, 0.22);
+      gap: 10px;
     }
 
-    /* sliders */
+    .mood-btn {
+      background: #faf7f9;
+      border: 2px solid #ede4ea;
+      border-radius: 24px;
+      padding: 12px 4px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      touch-action: manipulation;
+    }
+
+    .mood-btn .emoji {
+      font-size: 2rem;
+      display: block;
+      line-height: 1.2;
+    }
+
+    .mood-btn .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #4e3a45;
+      letter-spacing: 0.2px;
+      margin-top: 4px;
+    }
+
+    .mood-btn.selected {
+      border-color: #d47b9e;
+      background: #fdeef5;
+      box-shadow: 0 4px 10px rgba(212, 123, 158, 0.12);
+    }
+
+    /* ——— sliders (flat, tall) ——— */
     .slider-row {
       width: 100%;
       -webkit-appearance: none;
       appearance: none;
-      height: 8px;
-      border-radius: 10px;
+      height: 10px;
+      border-radius: 20px;
       outline: none;
+      background: #ede4ea;
       touch-action: none;
     }
+
     .slider-row::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 28px;
+      background: #ffffff;
+      border: 3px solid #d47b9e;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       cursor: pointer;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      border: 4px solid #F94C74;
     }
+
     .slider-row::-moz-range-thumb {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      border-radius: 28px;
       background: #fff;
-      border: 4px solid #F94C74;
+      border: 3px solid #d47b9e;
       cursor: pointer;
     }
-    #energySlider { background: linear-gradient(to right, #FFD3E0, #F94C74); }
-    #socialSlider { background: linear-gradient(to right, #D9E9FF, #74B3E0); }
+
+    #energySlider { background: linear-gradient(to right, #f0dce6, #d47b9e); }
+    #socialSlider { background: linear-gradient(to right, #dce6f0, #7b9ed4); }
+
     .slider-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 0.58rem;
-      color: #B092A0;
-      margin-top: 0.2rem;
+      font-size: 0.65rem;
+      color: #7b6773;
       font-weight: 600;
-    }
-    .slider-value {
-      text-align: center;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #43303B;
-      margin-top: 0.25rem;
-      font-family: 'Fredoka', sans-serif;
+      margin-top: 6px;
+      padding: 0 2px;
     }
 
-    /* quick grid */
+    .slider-value {
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #2d2329;
+      margin-top: 8px;
+    }
+
+    /* ——— quick grid (2 col) ——— */
     .quick-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
+      gap: 12px;
     }
+
     .quick-box {
-      background: #FFF7F9;
-      border: 1.5px solid #FFE0EC;
-      border-radius: 16px;
-      padding: 0.6rem 0.7rem;
+      background: #faf7f9;
+      border-radius: 22px;
+      padding: 14px 12px;
+      border: 1px solid #ede4ea;
     }
+
     .quick-box .qlabel {
-      font-size: 0.65rem;
       font-weight: 700;
-      color: #8A6575;
+      font-size: 0.8rem;
+      color: #4c3943;
       display: flex;
       align-items: center;
-      gap: 4px;
-      margin-bottom: 0.35rem;
+      gap: 6px;
+      margin-bottom: 8px;
     }
+
     .stepper {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 6px;
     }
+
     .stepper button {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      border-radius: 34px;
       border: none;
-      background: #FFE2ED;
-      color: #F94C74;
-      font-size: 1rem;
-      font-weight: 700;
+      background: #ede4ea;
+      color: #2d2329;
+      font-size: 1.3rem;
+      font-weight: 500;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       touch-action: manipulation;
     }
+
     .stepper .val {
-      font-family: 'Fredoka', sans-serif;
-      font-weight: 600;
-      font-size: 0.95rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      min-width: 40px;
+      text-align: center;
     }
+
     .droplets {
       display: flex;
-      gap: 3px;
+      gap: 4px;
       justify-content: space-between;
+      flex-wrap: wrap;
     }
+
     .droplet {
-      font-size: 1.1rem;
+      font-size: 1.5rem;
       cursor: pointer;
-      opacity: 0.3;
-      transform: scale(0.9);
-      transition: opacity 0.1s, transform 0.1s;
+      opacity: 0.25;
+      transition: opacity 0.1s;
       touch-action: manipulation;
     }
-    .droplet.filled { opacity: 1; transform: scale(1); }
+
+    .droplet.filled { opacity: 1; }
 
     .weather-row {
       display: flex;
+      gap: 6px;
       flex-wrap: wrap;
-      gap: 0.3rem;
+      margin-top: 4px;
     }
+
     .weather-btn {
-      background: #fff;
-      border: 1.5px solid #FFE0EC;
-      border-radius: 12px;
-      padding: 0.3rem 0.5rem;
-      font-size: 0.9rem;
+      background: #faf7f9;
+      border: 2px solid #ede4ea;
+      border-radius: 40px;
+      padding: 6px 14px;
+      font-size: 1.2rem;
       cursor: pointer;
       touch-action: manipulation;
+      line-height: 1.4;
     }
-    .weather-btn.selected { border-color: #74B3E0; background: #E7F2FF; }
 
-    /* question group */
-    .question-group { margin-bottom: 0.7rem; }
+    .weather-btn.selected {
+      border-color: #7b9ed4;
+      background: #eaf0fa;
+    }
+
+    /* ——— text inputs ——— */
+    .question-group {
+      margin-bottom: 16px;
+    }
+
     .question-group:last-child { margin-bottom: 0; }
+
     .question-group label {
       display: flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.75rem;
+      gap: 6px;
       font-weight: 700;
-      color: #43303B;
-      margin-bottom: 0.3rem;
+      font-size: 0.85rem;
+      color: #2d2329;
+      margin-bottom: 6px;
     }
-    .question-group label i { color: #FF8FAB; }
+
+    .question-group label i { color: #d47b9e; width: 20px; }
+
     .question-group textarea,
     .question-group input[type="text"] {
       width: 100%;
-      border: 1.5px solid #FFE0EC;
-      border-radius: 13px;
-      padding: 0.55rem 0.7rem;
-      font-family: 'Quicksand', sans-serif;
-      font-size: 0.8rem;
-      background: #fff;
-      color: #43303B;
+      border: 2px solid #ede4ea;
+      border-radius: 20px;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      background: #fcfafb;
+      color: #1f161b;
       touch-action: manipulation;
+      font-family: inherit;
+      transition: border 0.1s;
     }
+
     .question-group textarea:focus,
     .question-group input:focus {
       outline: none;
-      border-color: #FF8FAB;
-      box-shadow: 0 0 0 3px rgba(255, 143, 171, 0.14);
+      border-color: #d47b9e;
+      background: #ffffff;
     }
-    .question-group textarea { resize: vertical; min-height: 44px; }
-    .question-group textarea::placeholder,
-    .question-group input::placeholder { color: #CBA9B6; }
 
-    /* tags */
+    .question-group textarea { resize: vertical; min-height: 50px; }
+
+    /* ——— tags ——— */
     .tag-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.3rem;
-    }
-    .tag-btn {
-      background: #fff;
-      border: 1.5px solid #FFE0EC;
-      border-radius: 30px;
-      padding: 0.25rem 0.7rem;
-      font-size: 0.65rem;
-      font-family: 'Quicksand', sans-serif;
-      font-weight: 600;
-      color: #8A6575;
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-    .tag-btn.selected {
-      background: #FF8FAB;
-      border-color: #FF6B8A;
-      color: #fff;
-      box-shadow: 0 6px 18px rgba(249, 76, 116, 0.22);
+      gap: 8px;
     }
 
-    /* save button */
-    .save-btn {
-      background: linear-gradient(135deg, #FF8FAB, #F94C74);
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      padding: 0.8rem 1.2rem;
-      font-size: 1rem;
-      font-weight: 700;
+    .tag-btn {
+      background: #faf7f9;
+      border: 2px solid #ede4ea;
+      border-radius: 60px;
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #4c3943;
       cursor: pointer;
-      font-family: 'Fredoka', sans-serif;
-      width: 100%;
-      margin-top: 0.1rem;
-      box-shadow: 0 14px 34px rgba(249, 76, 116, 0.14);
-      position: relative;
       touch-action: manipulation;
     }
+
+    .tag-btn.selected {
+      background: #d47b9e;
+      border-color: #b96184;
+      color: #ffffff;
+    }
+
+    /* ——— save button ——— */
+    .save-btn {
+      background: #d47b9e;
+      color: #fff;
+      border: none;
+      border-radius: 60px;
+      padding: 18px 20px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 6px 14px rgba(212, 123, 158, 0.18);
+      margin: 4px 0 12px;
+      touch-action: manipulation;
+      transition: background 0.1s;
+    }
+
+    .save-btn:active { background: #c06a8d; }
+
     .save-btn .btn-sub {
-      font-size: 0.58rem;
+      font-size: 0.7rem;
       font-weight: 500;
       display: block;
       opacity: 0.85;
-      font-family: 'Quicksand', sans-serif;
       margin-top: 2px;
     }
 
-    .confetti-layer {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 50;
-    }
-
+    /* ——— status ——— */
     .status {
       text-align: center;
-      font-size: 0.78rem;
-      margin-top: 0.5rem;
-      min-height: 1.8rem;
       font-weight: 700;
-      padding: 0.3rem;
-      border-radius: 13px;
+      font-size: 0.9rem;
+      padding: 10px 6px;
+      border-radius: 40px;
+      margin: 8px 0 12px;
+      background: #f2eaf0;
+      color: #4c3943;
     }
-    .status.success { color: #2E8B4C; background: #E9F8EE; }
-    .status.error { color: #D0405A; background: #FFECEE; }
-    .status.info { color: #5A6FB5; background: #EEF1FF; }
-    .status.warning { color: #C57A00; background: #FFF4E3; }
 
-    /* stats strip */
+    .status.success { background: #e3f3e8; color: #1f6d3c; }
+    .status.error { background: #fcecee; color: #b13e4f; }
+    .status.info { background: #eaf0fa; color: #3f5d8a; }
+    .status.warning { background: #fcf2e1; color: #8a6200; }
+
+    /* ——— stats strip ——— */
     .stats-strip {
       display: flex;
-      gap: 0.4rem;
+      gap: 8px;
       overflow-x: auto;
-      margin: 0.8rem 0 0.6rem;
-      padding-bottom: 4px;
+      margin: 12px 0 8px;
+      padding-bottom: 6px;
       scroll-snap-type: x proximity;
       -webkit-overflow-scrolling: touch;
     }
-    .stats-strip::-webkit-scrollbar { height: 3px; }
+
     .stat-box {
-      background: #FFFCFD;
-      border-radius: 16px;
-      padding: 0.5rem 0.7rem;
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 12px 16px;
       text-align: center;
-      border: 1px solid #FFE0EC;
-      min-width: 72px;
+      border: 1px solid #ede4ea;
+      min-width: 78px;
       flex: 0 0 auto;
       scroll-snap-align: start;
     }
+
     .stat-box .number {
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      color: #43303B;
-      font-family: 'Fredoka', sans-serif;
+      color: #1f161b;
     }
+
     .stat-box .stat-label {
-      font-size: 0.5rem;
-      color: #B092A0;
+      font-size: 0.6rem;
       text-transform: uppercase;
       letter-spacing: 0.3px;
+      color: #7b6773;
       font-weight: 700;
     }
 
-    /* history */
-    .history-section { margin-top: 0.8rem; }
+    /* ——— history ——— */
     .history-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.6rem;
-      flex-wrap: wrap;
+      margin-bottom: 14px;
     }
+
     .history-header h3 {
-      font-family: 'Fredoka', sans-serif;
-      color: #43303B;
-      font-size: 0.92rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1f161b;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
-    .history-header h3 i { color: #FF8FAB; }
+
+    .history-header h3 i { color: #d47b9e; }
+
     .history-count {
-      font-size: 0.65rem;
-      color: #8A6575;
-      background: #FFF0F5;
-      padding: 0.1rem 0.7rem;
-      border-radius: 20px;
+      background: #f2eaf0;
+      padding: 4px 16px;
+      border-radius: 40px;
       font-weight: 700;
+      font-size: 0.7rem;
+      color: #4c3943;
     }
 
     .history-grid {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      max-height: 420px;
+      gap: 12px;
+      max-height: 440px;
       overflow-y: auto;
       padding-right: 2px;
-      -webkit-overflow-scrolling: touch;
     }
-    .history-grid::-webkit-scrollbar { width: 4px; }
-    .history-grid::-webkit-scrollbar-thumb { background: #FF8FAB; border-radius: 10px; }
 
     .history-item {
-      background: #fff;
-      border-radius: 16px;
-      padding: 0.7rem 0.8rem;
-      border: 1.5px solid #FFE0EC;
-      position: relative;
-      border-left-width: 5px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 16px 16px;
+      border: 1px solid #ede4ea;
+      border-left-width: 6px;
       border-left-style: solid;
     }
+
     .history-top {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 10px;
       flex-wrap: wrap;
     }
-    .history-top .mood-emoji { font-size: 1.4rem; min-width: 30px; }
+
+    .history-top .mood-emoji { font-size: 1.8rem; min-width: 34px; }
     .history-top .mood-name {
       font-weight: 700;
-      color: #43303B;
-      font-size: 0.82rem;
-      font-family: 'Fredoka', sans-serif;
+      font-size: 1rem;
+      color: #1f161b;
     }
     .history-top .mood-time {
-      font-size: 0.55rem;
-      color: #B092A0;
       margin-left: auto;
-      white-space: nowrap;
+      font-size: 0.65rem;
+      color: #7b6773;
       font-weight: 600;
     }
+
     .history-details {
-      font-size: 0.65rem;
-      color: #8A6575;
-      margin-left: 2.2rem;
+      font-size: 0.75rem;
+      color: #5f4a56;
+      margin-left: 50px;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.2rem 0.6rem;
-      margin-top: 0.1rem;
+      gap: 4px 12px;
+      margin-top: 4px;
     }
-    .history-details span { display: inline-flex; align-items: center; gap: 2px; }
+
     .history-note {
-      font-size: 0.7rem;
-      color: #43303B;
-      margin-left: 2.2rem;
-      margin-top: 0.2rem;
-      font-style: italic;
-      background: #FFF7F9;
-      padding: 0.2rem 0.6rem;
-      border-radius: 9px;
+      font-size: 0.8rem;
+      color: #2d2329;
+      margin-left: 50px;
+      margin-top: 6px;
+      background: #f8f2f5;
+      padding: 6px 12px;
+      border-radius: 16px;
     }
+
     .history-tags {
-      margin-left: 2.2rem;
-      margin-top: 0.2rem;
+      margin-left: 50px;
+      margin-top: 6px;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.2rem;
+      gap: 4px;
     }
+
     .history-tags span {
-      background: #FFE2ED;
-      color: #F94C74;
-      font-size: 0.58rem;
+      background: #f2eaf0;
+      color: #4c3943;
+      font-size: 0.65rem;
       font-weight: 700;
-      padding: 0.1rem 0.4rem;
-      border-radius: 20px;
+      padding: 2px 12px;
+      border-radius: 30px;
     }
+
     .delete-btn {
-      position: absolute;
-      top: 0.4rem;
-      right: 0.5rem;
       background: none;
       border: none;
-      color: #DCC0CA;
+      color: #bba8b5;
       cursor: pointer;
-      font-size: 0.75rem;
-      padding: 0.2rem;
+      font-size: 0.9rem;
+      padding: 4px;
       touch-action: manipulation;
     }
+
     .empty-history {
       text-align: center;
-      color: #B092A0;
-      font-size: 0.8rem;
-      padding: 1.8rem 0;
+      color: #7b6773;
+      padding: 30px 0;
+      font-weight: 500;
     }
-    .empty-history i { font-size: 2rem; display: block; margin-bottom: 0.4rem; opacity: 0.4; }
+
+    .empty-history i { font-size: 2.2rem; display: block; margin-bottom: 10px; opacity: 0.3; }
 
     .clear-btn {
       background: none;
-      border: 1.5px solid #FFE0EC;
-      border-radius: 30px;
-      padding: 0.25rem 1.2rem;
-      font-size: 0.65rem;
-      color: #8A6575;
-      cursor: pointer;
-      font-family: 'Quicksand', sans-serif;
-      margin-top: 0.6rem;
+      border: 2px solid #ede4ea;
+      border-radius: 40px;
+      padding: 8px 24px;
       font-weight: 700;
+      font-size: 0.75rem;
+      color: #4c3943;
+      cursor: pointer;
+      margin-top: 12px;
       touch-action: manipulation;
     }
 
     .footer {
       text-align: center;
-      font-size: 0.65rem;
-      color: #B092A0;
-      margin-top: 1rem;
-      padding-top: 0.6rem;
-      border-top: 1.5px dashed #FFE0EC;
+      font-size: 0.75rem;
+      color: #7b6773;
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 2px solid #f0e8ee;
     }
-    .footer i { color: #FF8FAB; }
 
-    /* small phone tweaks */
+    .footer i { color: #d47b9e; }
+
+    /* ——— responsive tweaks ——— */
     @media (max-width: 380px) {
-      .mood-grid { gap: 0.3rem; }
-      .mood-btn .emoji { font-size: 1.2rem; }
-      .mood-btn .label { font-size: 0.5rem; }
-      .quick-grid { gap: 0.3rem; }
-      .quick-box { padding: 0.4rem 0.5rem; }
-      .section-card { padding: 0.7rem 0.7rem; }
-      .header .greeting { font-size: 1.2rem; }
-      .avatar-bubble { width: 50px; height: 50px; font-size: 1.5rem; }
-      .stat-box { min-width: 60px; padding: 0.4rem 0.5rem; }
-      .stat-box .number { font-size: 0.95rem; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; transition: none !important; }
+      .mood-grid { gap: 6px; }
+      .mood-btn .emoji { font-size: 1.6rem; }
+      .mood-btn .label { font-size: 0.6rem; }
+      .quick-grid { gap: 8px; }
+      .card { padding: 16px 14px; }
+      .greeting { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
-
-<div class="blob-field">
-  <div class="blob blob-a" id="blobA"></div>
-  <div class="blob blob-b" id="blobB"></div>
-  <div class="blob blob-c" id="blobC"></div>
-</div>
-<div class="confetti-layer" id="confettiLayer"></div>
-
 <div class="container">
 
-  <div class="header" id="headerBlock">
-    <div class="avatar-bubble" id="avatarBubble">🌸</div>
+  <!-- header -->
+  <div class="header">
+    <div class="avatar" id="avatarBubble">🌸</div>
     <div class="greeting">Hey <span>Mickle</span>!</div>
-    <p>How are you feeling today, sweetie?</p>
-    <div class="date-display" id="dateDisplay"></div>
+    <div class="sub-greeting">How are you feeling today?</div>
+    <div class="date-badge" id="dateDisplay"></div>
   </div>
 
+  <!-- telegram status -->
   <div class="telegram-status testing" id="telegramStatus">
     <i class="fas fa-spinner fa-spin"></i>
-    <span id="telegramStatusText">Connecting to Telegram...</span>
+    <span id="telegramStatusText">Connecting …</span>
   </div>
 
-  <div class="section-card" id="moodCard">
-    <div class="card-title"><span class="icon-badge"><i class="fas fa-face-smile"></i></span> How are you feeling?</div>
+  <!-- mood -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-face-smile"></i> How are you feeling?</div>
     <div class="mood-grid" id="moodButtons"></div>
   </div>
 
-  <div class="section-card" id="energyCard">
-    <div class="card-title"><span class="icon-badge"><i class="fas fa-bolt"></i></span> Energy Level</div>
+  <!-- energy -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-bolt"></i> Energy</div>
     <input type="range" class="slider-row" id="energySlider" min="0" max="10" value="5">
-    <div class="slider-labels"><span>😴 No energy</span><span>⚡ Charged up</span></div>
-    <div class="slider-value" id="energyValue">Energy: 5 / 10</div>
+    <div class="slider-labels"><span>😴 low</span><span>⚡ high</span></div>
+    <div class="slider-value" id="energyValue">⚡ 5 / 10</div>
   </div>
 
-  <div class="section-card" id="quickCard">
-    <div class="card-title"><span class="icon-badge"><i class="fas fa-list-check"></i></span> A few more details</div>
+  <!-- quick details -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-list-check"></i> A few more details</div>
     <div class="quick-grid">
       <div class="quick-box">
         <div class="qlabel">😴 Sleep (hrs)</div>
@@ -680,123 +669,111 @@
         <div class="weather-row" id="weatherRow"></div>
       </div>
       <div class="quick-box" style="grid-column:1 / -1;">
-        <div class="qlabel">🔋 Social Battery</div>
+        <div class="qlabel">🔋 Social battery</div>
         <input type="range" class="slider-row" id="socialSlider" min="0" max="10" value="5">
-        <div class="slider-labels"><span>🙈 Drained</span><span>🎉 Full</span></div>
-        <div class="slider-value" id="socialValue" style="margin-top:0.15rem;">Social: 5 / 10</div>
+        <div class="slider-labels"><span>🙈 drained</span><span>🎉 full</span></div>
+        <div class="slider-value" id="socialValue">🔋 5 / 10</div>
       </div>
     </div>
   </div>
 
-  <div class="section-card" id="reflectCard">
-    <div class="card-title"><span class="icon-badge"><i class="fas fa-pen"></i></span> Tell me more...</div>
+  <!-- reflect -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-pen"></i> Tell me more</div>
 
     <div class="question-group">
       <label><i class="fas fa-play"></i> What are you doing?</label>
-      <input type="text" id="currentActivity" placeholder="e.g., Watching a drama, studying, relaxing...">
+      <input type="text" id="currentActivity" placeholder="e.g. watching drama, studying ...">
     </div>
-
     <div class="question-group">
       <label><i class="fas fa-brain"></i> What's on your mind?</label>
-      <textarea id="thoughts" placeholder="Share what you're thinking about..."></textarea>
+      <textarea id="thoughts" placeholder="Share what you're thinking ..."></textarea>
     </div>
-
     <div class="question-group">
-      <label><i class="fas fa-star"></i> One good thing about today?</label>
-      <textarea id="gratitude" placeholder="Even something tiny counts..."></textarea>
+      <label><i class="fas fa-star"></i> One good thing today?</label>
+      <textarea id="gratitude" placeholder="Even something tiny ..."></textarea>
     </div>
-
     <div class="question-group">
       <label><i class="fas fa-gift"></i> What would make you feel better?</label>
       <div class="tag-group" id="comfortTags"></div>
     </div>
-
     <div class="question-group">
       <label><i class="fas fa-sun"></i> How was your day?</label>
-      <textarea id="daySummary" placeholder="Tell me about your day..."></textarea>
+      <textarea id="daySummary" placeholder="Tell me about your day ..."></textarea>
     </div>
   </div>
 
+  <!-- save -->
   <button class="save-btn" id="saveMood">
-    <i class="fas fa-heart"></i> Save My Mood
+    <i class="fas fa-heart"></i> Save my mood
     <span class="btn-sub">I care about you</span>
   </button>
-  <div class="status info" id="status">How are you feeling today, sweetie?</div>
+  <div class="status info" id="status">How are you feeling today?</div>
 
+  <!-- stats -->
   <div class="stats-strip" id="statsStrip"></div>
 
-  <div class="history-section">
+  <!-- history -->
+  <div class="card" style="margin-top: 6px;">
     <div class="history-header">
-      <h3><i class="fas fa-clock"></i> Mood History</h3>
+      <h3><i class="fas fa-clock"></i> Mood history</h3>
       <span class="history-count" id="historyCount">0 entries</span>
     </div>
     <div class="history-grid" id="historyGrid"></div>
     <div style="text-align:center;">
-      <button class="clear-btn" id="clearHistory"><i class="fas fa-trash-alt"></i> Clear All</button>
+      <button class="clear-btn" id="clearHistory"><i class="fas fa-trash-alt"></i> Clear all</button>
     </div>
   </div>
 
-  <div class="footer"><i class="fas fa-heart"></i> Every mood is valid. I'm here for you, Mickle! <i class="fas fa-heart"></i></div>
-
+  <div class="footer"><i class="fas fa-heart"></i> Every mood is valid. I'm here for you, Mickle!</div>
 </div>
 
 <script>
-  // ================================================
-  // CONFIG
-  // ================================================
+  // ——— CONFIG ———
   const TELEGRAM_BOT_TOKEN = '8857041504:AAE5Dmp3NJVqJ-A1hMibVnhg1RBMbCQNkjQ';
   const TELEGRAM_CHAT_ID = '6357527757';
   const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const MOODS = [
-    {id:'happy', emoji:'😊', label:'Happy', color:'#FFB03A'},
-    {id:'sad', emoji:'😢', label:'Sad', color:'#6D9CE0'},
-    {id:'angry', emoji:'😤', label:'Angry', color:'#FF5B49'},
-    {id:'tired', emoji:'😴', label:'Tired', color:'#9C8DD9'},
-    {id:'excited', emoji:'🤩', label:'Excited', color:'#FF7FC4'},
-    {id:'loved', emoji:'🥰', label:'Loved', color:'#FF6B8A'},
-    {id:'anxious', emoji:'😰', label:'Anxious', color:'#7FAAD6'},
-    {id:'stressed', emoji:'😩', label:'Stressed', color:'#D67A54'},
-    {id:'bored', emoji:'😑', label:'Bored', color:'#A79F97'},
-    {id:'calm', emoji:'😌', label:'Calm', color:'#5FCBB4'},
-    {id:'hopeful', emoji:'🙏', label:'Hopeful', color:'#FFB84D'},
-    {id:'grateful', emoji:'🙌', label:'Grateful', color:'#FF9A5A'},
-    {id:'playful', emoji:'😜', label:'Playful', color:'#FF8FCB'},
-    {id:'nervous', emoji:'😬', label:'Nervous', color:'#B39CFF'},
-    {id:'proud', emoji:'😎', label:'Proud', color:'#4FB8CC'},
-    {id:'lonely', emoji:'🥺', label:'Lonely', color:'#8B9AD1'},
-    {id:'motivated', emoji:'💪', label:'Motivated', color:'#FF6B55'},
-    {id:'silly', emoji:'🤪', label:'Silly', color:'#FFC94A'},
-    {id:'nostalgic', emoji:'🌇', label:'Nostalgic', color:'#D6935F'},
-    {id:'peaceful', emoji:'🕊️', label:'Peaceful', color:'#8FCDBB'}
+    {id:'happy', emoji:'😊', label:'Happy'},
+    {id:'sad', emoji:'😢', label:'Sad'},
+    {id:'angry', emoji:'😤', label:'Angry'},
+    {id:'tired', emoji:'😴', label:'Tired'},
+    {id:'excited', emoji:'🤩', label:'Excited'},
+    {id:'loved', emoji:'🥰', label:'Loved'},
+    {id:'anxious', emoji:'😰', label:'Anxious'},
+    {id:'stressed', emoji:'😩', label:'Stressed'},
+    {id:'bored', emoji:'😑', label:'Bored'},
+    {id:'calm', emoji:'😌', label:'Calm'},
+    {id:'hopeful', emoji:'🙏', label:'Hopeful'},
+    {id:'grateful', emoji:'🙌', label:'Grateful'},
+    {id:'playful', emoji:'😜', label:'Playful'},
+    {id:'nervous', emoji:'😬', label:'Nervous'},
+    {id:'proud', emoji:'😎', label:'Proud'},
+    {id:'lonely', emoji:'🥺', label:'Lonely'},
+    {id:'motivated', emoji:'💪', label:'Motivated'},
+    {id:'silly', emoji:'🤪', label:'Silly'},
+    {id:'nostalgic', emoji:'🌇', label:'Nostalgic'},
+    {id:'peaceful', emoji:'🕊️', label:'Peaceful'}
   ];
   const MOOD_MAP = Object.fromEntries(MOODS.map(m => [m.id, m]));
 
   const WEATHERS = [
-    {id:'sunny', emoji:'☀️', label:'Sunny'},
-    {id:'cloudy', emoji:'☁️', label:'Cloudy'},
-    {id:'rainy', emoji:'🌧️', label:'Rainy'},
-    {id:'stormy', emoji:'⛈️', label:'Stormy'},
-    {id:'snowy', emoji:'❄️', label:'Snowy'},
-    {id:'windy', emoji:'🌬️', label:'Windy'}
+    {id:'sunny', emoji:'☀️'}, {id:'cloudy', emoji:'☁️'}, {id:'rainy', emoji:'🌧️'},
+    {id:'stormy', emoji:'⛈️'}, {id:'snowy', emoji:'❄️'}, {id:'windy', emoji:'🌬️'}
   ];
 
   const COMFORT_TAGS = ['🍜 Food','🎵 Music','🤗 Hug','💬 Talk','😴 Sleep','📺 Movie','🚶 Walk','💜 BTS','🖤 BLACKPINK','☕ Coffee','🎮 Games','📚 Reading','🛁 Bath','🐾 Pets'];
 
-  // ================================================
-  // STATE
-  // ================================================
+  // ——— STATE ———
   let selectedMood = null;
-  let selectedMoodColor = null;
   let moods = [];
   let selectedTags = [];
   let sleepVal = 7.0;
   let waterVal = 0;
   let selectedWeather = null;
 
-  // ================================================
-  // DOM REFS
-  // ================================================
+  // ——— DOM ———
   const moodButtonsEl = document.getElementById('moodButtons');
   const energySlider = document.getElementById('energySlider');
   const energyValue = document.getElementById('energyValue');
@@ -820,22 +797,21 @@
   const weatherRow = document.getElementById('weatherRow');
   const sleepValEl = document.getElementById('sleepVal');
   const avatarBubble = document.getElementById('avatarBubble');
-  const confettiLayer = document.getElementById('confettiLayer');
-  const blobA = document.getElementById('blobA');
-  const blobB = document.getElementById('blobB');
 
-  // ================================================
-  // BUILD DYNAMIC UI
-  // ================================================
+  // ——— BUILD UI ———
   function buildMoodButtons() {
     MOODS.forEach(m => {
       const btn = document.createElement('button');
       btn.className = 'mood-btn';
       btn.dataset.mood = m.id;
-      btn.style.setProperty('--mood-color', m.color);
-      btn.style.setProperty('--mood-tint', m.color + '26');
       btn.innerHTML = `<span class="emoji">${m.emoji}</span><span class="label">${m.label}</span>`;
-      btn.addEventListener('click', () => selectMood(m, btn));
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedMood = m.id;
+        avatarBubble.textContent = m.emoji;
+        setStatus(`Selected: ${m.label} ${m.emoji}`, 'info');
+      });
       moodButtonsEl.appendChild(btn);
     });
   }
@@ -850,7 +826,6 @@
         btn.classList.toggle('selected');
         if (btn.classList.contains('selected')) {
           if (!selectedTags.includes(t)) selectedTags.push(t);
-          if (!REDUCE_MOTION) gsap.fromTo(btn, {scale:0.85}, {scale:1, duration:0.3, ease:'back.out(3)'});
         } else {
           selectedTags = selectedTags.filter(x => x !== t);
         }
@@ -868,7 +843,6 @@
       d.addEventListener('click', () => {
         waterVal = (waterVal === i) ? 0 : i;
         renderDroplets();
-        if (!REDUCE_MOTION) gsap.fromTo(d, {scale:1.5}, {scale:1, duration:0.35, ease:'back.out(4)'});
       });
       droplets.appendChild(d);
     }
@@ -886,14 +860,12 @@
       btn.type = 'button';
       btn.className = 'weather-btn';
       btn.dataset.weather = w.id;
-      btn.title = w.label;
       btn.textContent = w.emoji;
       btn.addEventListener('click', () => {
         const already = selectedWeather === w.id;
         selectedWeather = already ? null : w.id;
         weatherRow.querySelectorAll('.weather-btn').forEach(b => b.classList.remove('selected'));
         if (!already) btn.classList.add('selected');
-        if (!REDUCE_MOTION) gsap.fromTo(btn, {scale:1.3}, {scale:1, duration:0.3, ease:'back.out(3)'});
       });
       weatherRow.appendChild(btn);
     });
@@ -904,124 +876,65 @@
   buildDroplets();
   buildWeatherRow();
 
-  // ================================================
-  // AMBIENT
-  // ================================================
-  function startAmbientMotion() {
-    if (REDUCE_MOTION) return;
-    gsap.to(blobA, {x:40, y:30, duration:9, repeat:-1, yoyo:true, ease:'sine.inOut'});
-    gsap.to(blobB, {x:-30, y:-25, duration:11, repeat:-1, yoyo:true, ease:'sine.inOut'});
-    gsap.to('#blobC', {x:25, y:-20, duration:8, repeat:-1, yoyo:true, ease:'sine.inOut'});
-    gsap.to(avatarBubble, {y:-4, duration:1.8, repeat:-1, yoyo:true, ease:'sine.inOut'});
-  }
-
-  function playEntranceAnimation() {
-    if (REDUCE_MOTION) return;
-    gsap.set('.header, .telegram-status, .section-card, .save-btn, .stats-strip, .history-section, .footer', {opacity:0, y:14});
-    gsap.to('.header', {opacity:1, y:0, duration:0.5, ease:'power2.out'});
-    gsap.to('.telegram-status', {opacity:1, y:0, duration:0.5, delay:0.05, ease:'power2.out'});
-    gsap.to('.section-card', {opacity:1, y:0, duration:0.5, stagger:0.07, delay:0.1, ease:'power2.out'});
-    gsap.to('.save-btn, .stats-strip, .history-section, .footer', {opacity:1, y:0, duration:0.5, stagger:0.06, delay:0.45, ease:'power2.out'});
-  }
-
-  // ================================================
-  // MOOD
-  // ================================================
-  function selectMood(m, btn) {
-    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    selectedMood = m.id;
-    selectedMoodColor = m.color;
-    avatarBubble.textContent = m.emoji;
-
-    if (!REDUCE_MOTION) {
-      gsap.fromTo(btn, {scale:0.9}, {scale:1.06, duration:0.25, ease:'back.out(4)', onComplete:()=>gsap.to(btn,{scale:1,duration:0.15})});
-      gsap.fromTo(avatarBubble, {scale:0.7, rotate:-8}, {scale:1, rotate:0, duration:0.45, ease:'back.out(3)'});
-      gsap.to(blobA, {backgroundColor:m.color, duration:0.8, ease:'power1.out'});
-      gsap.to(blobB, {backgroundColor:m.color, duration:1.1, ease:'power1.out'});
-    } else {
-      blobA.style.backgroundColor = m.color;
-      blobB.style.backgroundColor = m.color;
-    }
-    setStatus(`Selected: ${m.label} ${m.emoji}`, 'info');
-  }
-
-  // ================================================
-  // SLEEP
-  // ================================================
+  // ——— SLEEP ———
   document.getElementById('sleepPlus').addEventListener('click', () => { sleepVal = Math.min(12, sleepVal + 0.5); updateSleep(); });
   document.getElementById('sleepMinus').addEventListener('click', () => { sleepVal = Math.max(0, sleepVal - 0.5); updateSleep(); });
-  function updateSleep() {
-    sleepValEl.textContent = sleepVal.toFixed(1);
-    if (!REDUCE_MOTION) gsap.fromTo(sleepValEl, {scale:1.25}, {scale:1, duration:0.25, ease:'back.out(4)'});
-  }
+  function updateSleep() { sleepValEl.textContent = sleepVal.toFixed(1); }
 
-  // ================================================
-  // SLIDERS
-  // ================================================
-  energySlider.addEventListener('input', function() { energyValue.textContent = `Energy: ${this.value} / 10`; });
-  socialSlider.addEventListener('input', function() { socialValue.textContent = `Social: ${this.value} / 10`; });
+  // ——— SLIDERS ———
+  energySlider.addEventListener('input', function() { energyValue.textContent = `⚡ ${this.value} / 10`; });
+  socialSlider.addEventListener('input', function() { socialValue.textContent = `🔋 ${this.value} / 10`; });
 
-  // ================================================
-  // TELEGRAM
-  // ================================================
+  // ——— TELEGRAM ———
   async function testTelegram() {
     try {
       telegramStatus.className = 'telegram-status testing';
-      telegramStatusText.textContent = 'Testing Telegram connection...';
+      telegramStatusText.textContent = 'Testing …';
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe`;
       const response = await fetch(url);
       const data = await response.json();
       if (data.ok) {
         telegramStatus.className = 'telegram-status success';
-        telegramStatusText.textContent = `Connected! Bot: @${data.result.username}`;
+        telegramStatusText.textContent = `✅ connected @${data.result.username}`;
       } else {
         telegramStatus.className = 'telegram-status error';
-        telegramStatusText.textContent = 'Bot token invalid!';
+        telegramStatusText.textContent = '❌ token invalid';
       }
-    } catch (error) {
+    } catch {
       telegramStatus.className = 'telegram-status error';
-      telegramStatusText.textContent = 'Cannot connect to Telegram.';
+      telegramStatusText.textContent = '⚠️ cannot connect';
     }
   }
 
   async function sendToTelegram(data) {
     const m = MOOD_MAP[data.mood];
     const date = new Date().toLocaleString('en-US', { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-
-    let message = `🌸 *Mickle's Mood Update* 🌸\n\n`;
+    let message = `🌸 *Mickle's mood* 🌸\n\n`;
     message += `${m ? m.emoji : '💕'} *Mood:* ${m ? m.label : data.mood}\n`;
     message += `⚡ *Energy:* ${data.energy}/10\n`;
     message += `🔋 *Social:* ${data.social}/10\n`;
-    message += `😴 *Sleep:* ${data.sleep} hrs\n`;
-    message += `💧 *Water:* ${data.water} cups\n`;
+    message += `😴 *Sleep:* ${data.sleep} hrs\n💧 *Water:* ${data.water} cups\n`;
     if (data.weather) message += `🌤️ *Weather:* ${data.weather}\n`;
     message += `📅 *Time:* ${date}\n\n`;
-
     if (data.activity) message += `🎯 *Doing:* ${data.activity}\n`;
     if (data.thoughts) message += `💭 *Thinking:* ${data.thoughts}\n`;
-    if (data.gratitude) message += `⭐ *Good thing:* ${data.gratitude}\n`;
+    if (data.gratitude) message += `⭐ *Good:* ${data.gratitude}\n`;
     if (data.daySummary) message += `📖 *Day:* ${data.daySummary}\n`;
-    if (data.tags && data.tags.length > 0) message += `🎁 *Wants:* ${data.tags.join(', ')}\n`;
-
-    message += `\n💕 I care about you, Mickle! Always here for you.`;
-
+    if (data.tags && data.tags.length) message += `🎁 *Wants:* ${data.tags.join(', ')}\n`;
+    message += `\n💕 I care about you, Mickle!`;
     try {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
       const payload = { chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'Markdown' };
       const response = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
       const result = await response.json();
       return result.ok;
-    } catch (error) { return false; }
+    } catch { return false; }
   }
 
-  // ================================================
-  // STORAGE
-  // ================================================
+  // ——— STORAGE ———
   function loadMoods() {
     const stored = localStorage.getItem('mickle_moods_v3');
-    if (stored) { try { moods = JSON.parse(stored); } catch (e) { moods = []; } }
-    else { moods = []; }
+    if (stored) { try { moods = JSON.parse(stored); } catch { moods = []; } } else { moods = []; }
     render(true);
   }
   function saveMoods(animateNew) {
@@ -1029,23 +942,20 @@
     render(false, animateNew);
   }
 
-  // ================================================
-  // RENDER
-  // ================================================
+  // ——— RENDER ———
   function weatherEmoji(id) { const w = WEATHERS.find(x => x.id === id); return w ? w.emoji : ''; }
 
   function render(initial, animateNew) {
     const sorted = [...moods].sort((a, b) => new Date(b.date) - new Date(a.date));
-
     if (sorted.length === 0) {
-      historyGrid.innerHTML = `<div class="empty-history"><i class="fas fa-heart"></i>No moods recorded yet.<br>Share how you feel! 💕</div>`;
+      historyGrid.innerHTML = `<div class="empty-history"><i class="fas fa-heart"></i>No moods recorded yet.<br>Share how you feel!</div>`;
     } else {
       historyGrid.innerHTML = sorted.map((item, index) => {
         const date = new Date(item.date);
         const timeStr = date.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-        const m = MOOD_MAP[item.mood] || { emoji:'💕', label:item.mood, color:'#FF6B8A' };
+        const m = MOOD_MAP[item.mood] || { emoji:'💕', label:item.mood, color:'#d47b9e' };
         return `
-          <div class="history-item" data-idx="${index}" style="border-left-color:${m.color};">
+          <div class="history-item" style="border-left-color:${m.color};">
             <div class="history-top">
               <span class="mood-emoji">${m.emoji}</span>
               <span class="mood-name">${m.label}</span>
@@ -1072,33 +982,14 @@
         btn.addEventListener('click', function() {
           const index = parseInt(this.dataset.index);
           const realIndex = moods.length - 1 - index;
-          if (confirm('Delete this mood entry?')) {
-            const el = this.closest('.history-item');
-            if (!REDUCE_MOTION && el) {
-              gsap.to(el, {opacity:0, x:60, scale:0.9, duration:0.3, ease:'power1.in', onComplete:()=>{
-                moods.splice(realIndex, 1);
-                saveMoods(false);
-                setStatus('Deleted!', 'warning');
-              }});
-            } else {
-              moods.splice(realIndex, 1);
-              saveMoods(false);
-              setStatus('Deleted!', 'warning');
-            }
+          if (confirm('Delete this entry?')) {
+            moods.splice(realIndex, 1);
+            saveMoods(false);
+            setStatus('Deleted', 'warning');
           }
         });
       });
-
-      if (!REDUCE_MOTION) {
-        const items = historyGrid.querySelectorAll('.history-item');
-        if (initial) {
-          gsap.fromTo(items, {opacity:0, y:14}, {opacity:1, y:0, duration:0.4, stagger:0.05, ease:'power2.out', delay:0.5});
-        } else if (animateNew && items.length) {
-          gsap.fromTo(items[0], {opacity:0, y:-16, scale:0.95}, {opacity:1, y:0, scale:1, duration:0.4, ease:'back.out(2)'});
-        }
-      }
     }
-
     historyCount.textContent = moods.length + ' entries';
     renderStats();
   }
@@ -1106,31 +997,28 @@
   function renderStats() {
     const today = new Date().toDateString();
     const todayEntries = moods.filter(m => new Date(m.date).toDateString() === today);
-    const todayMoodTxt = todayEntries.length ? (MOOD_MAP[todayEntries[todayEntries.length-1].mood]?.emoji + ' ' + MOOD_MAP[todayEntries[todayEntries.length-1].mood]?.label) : 'No entry';
+    const todayMoodTxt = todayEntries.length ? (MOOD_MAP[todayEntries[todayEntries.length-1].mood]?.emoji + ' ' + MOOD_MAP[todayEntries[todayEntries.length-1].mood]?.label) : '—';
 
-    let topMoodTxt = '-';
+    let topMoodTxt = '—';
     if (moods.length) {
       const count = {};
       moods.forEach(m => count[m.mood] = (count[m.mood] || 0) + 1);
       const top = Object.entries(count).sort((a, b) => b[1] - a[1])[0];
       if (top) topMoodTxt = (MOOD_MAP[top[0]]?.emoji || '') + ' ' + (MOOD_MAP[top[0]]?.label || top[0]);
     }
-
     const avg = (key) => {
       const entries = moods.filter(m => m[key] !== undefined && m[key] !== null);
-      if (!entries.length) return '-';
+      if (!entries.length) return '—';
       return (entries.reduce((a, m) => a + m[key], 0) / entries.length).toFixed(1);
     };
-
     const stats = [
       { label: 'Entries', value: moods.length },
-      { label: "Today", value: todayMoodTxt },
-      { label: 'Top Mood', value: topMoodTxt },
-      { label: 'Avg Energy', value: avg('energy') },
-      { label: 'Avg Sleep', value: avg('sleep') },
-      { label: 'Avg Water', value: avg('water') },
+      { label: 'Today', value: todayMoodTxt },
+      { label: 'Top mood', value: topMoodTxt },
+      { label: 'Avg energy', value: avg('energy') },
+      { label: 'Avg sleep', value: avg('sleep') },
+      { label: 'Avg water', value: avg('water') },
     ];
-
     statsStrip.innerHTML = stats.map(s => `<div class="stat-box"><div class="number">${s.value}</div><div class="stat-label">${s.label}</div></div>`).join('');
   }
 
@@ -1139,51 +1027,17 @@
     status.className = 'status ' + type;
     clearTimeout(status._timeout);
     status._timeout = setTimeout(() => {
-      status.textContent = 'How are you feeling today, sweetie?';
+      status.textContent = 'How are you feeling today?';
       status.className = 'status info';
     }, 5000);
   }
 
-  // ================================================
-  // CONFETTI
-  // ================================================
-  function burstConfetti() {
-    if (REDUCE_MOTION) return;
-    const emojis = ['💕', '✨', '🌸', '💗', '⭐'];
-    const rect = saveBtn.getBoundingClientRect();
-    for (let i = 0; i < 14; i++) {
-      const el = document.createElement('div');
-      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      el.style.position = 'fixed';
-      el.style.left = (rect.left + rect.width / 2) + 'px';
-      el.style.top = rect.top + 'px';
-      el.style.fontSize = (14 + Math.random() * 10) + 'px';
-      el.style.pointerEvents = 'none';
-      confettiLayer.appendChild(el);
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 60 + Math.random() * 90;
-      gsap.to(el, {
-        x: Math.cos(angle) * dist,
-        y: Math.sin(angle) * dist - 40,
-        opacity: 0,
-        rotate: Math.random() * 360,
-        duration: 0.9 + Math.random() * 0.5,
-        ease: 'power2.out',
-        onComplete: () => el.remove()
-      });
-    }
-  }
-
-  // ================================================
-  // SAVE
-  // ================================================
+  // ——— SAVE ———
   async function saveMood() {
     if (!selectedMood) {
       setStatus('Please select a mood first!', 'error');
-      if (!REDUCE_MOTION) gsap.fromTo('#moodCard', {x:-6}, {x:0, duration:0.4, ease:'elastic.out(1,0.3)'});
       return;
     }
-
     const moodEntry = {
       mood: selectedMood,
       energy: parseInt(energySlider.value),
@@ -1198,71 +1052,41 @@
       tags: [...selectedTags],
       date: new Date().toISOString(),
     };
-
     moods.push(moodEntry);
     saveMoods(true);
-    burstConfetti();
-    if (!REDUCE_MOTION) gsap.fromTo(saveBtn, {scale:0.95}, {scale:1, duration:0.3, ease:'back.out(4)'});
-
-    setStatus('Sending to Telegram...', 'info');
+    setStatus('Saving …', 'info');
     const telegramSent = await sendToTelegram(moodEntry);
-
     // reset
     selectedMood = null;
-    selectedMoodColor = null;
     document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-    currentActivity.value = '';
-    thoughts.value = '';
-    gratitude.value = '';
-    daySummary.value = '';
+    currentActivity.value = ''; thoughts.value = ''; gratitude.value = ''; daySummary.value = '';
     selectedTags = [];
     document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected'));
-    energySlider.value = 5;
-    energyValue.textContent = 'Energy: 5 / 10';
-    socialSlider.value = 5;
-    socialValue.textContent = 'Social: 5 / 10';
-    sleepVal = 7.0;
-    updateSleep();
-    waterVal = 0;
-    renderDroplets();
+    energySlider.value = 5; energyValue.textContent = '⚡ 5 / 10';
+    socialSlider.value = 5; socialValue.textContent = '🔋 5 / 10';
+    sleepVal = 7.0; updateSleep();
+    waterVal = 0; renderDroplets();
     selectedWeather = null;
     weatherRow.querySelectorAll('.weather-btn').forEach(b => b.classList.remove('selected'));
     avatarBubble.textContent = '🌸';
-
-    if (telegramSent) {
-      setStatus('Mood saved & sent to me! I care about you 💕', 'success');
-    } else {
-      setStatus('Mood saved locally but Telegram failed.', 'error');
-    }
+    if (telegramSent) setStatus('Saved & sent to me 💕', 'success');
+    else setStatus('Saved locally (Telegram failed)', 'error');
   }
 
   function clearHistory() {
-    if (moods.length === 0) { setStatus('No moods to clear!', 'info'); return; }
-    if (confirm('Clear all mood history? This cannot be undone!')) {
-      moods = [];
-      saveMoods(false);
-      setStatus('All moods cleared!', 'warning');
-    }
+    if (moods.length === 0) { setStatus('No moods to clear', 'info'); return; }
+    if (confirm('Clear all history?')) { moods = []; saveMoods(false); setStatus('All cleared', 'warning'); }
   }
 
-  // ================================================
-  // EVENTS
-  // ================================================
+  // ——— EVENTS ———
   saveBtn.addEventListener('click', saveMood);
-  currentActivity.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveMood(); } });
   clearBtn.addEventListener('click', clearHistory);
 
-  // ================================================
-  // INIT
-  // ================================================
-  const now = new Date();
-  dateDisplay.textContent = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-
+  // ——— INIT ———
+  dateDisplay.textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
   loadMoods();
-  setStatus('How are you feeling today, sweetie?', 'info');
+  setStatus('How are you feeling today?', 'info');
   testTelegram();
-  startAmbientMotion();
-  playEntranceAnimation();
 </script>
 </body>
 </html>
